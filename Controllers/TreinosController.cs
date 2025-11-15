@@ -1,11 +1,14 @@
 ﻿using FitTrack.Data;
 using FitTrack.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitTrack.Controllers
 {
+    [Authorize]
     public class TreinosController : Controller
+
     {
         private readonly ApplicationDbContext _context;
 

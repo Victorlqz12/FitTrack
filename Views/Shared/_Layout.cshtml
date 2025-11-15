@@ -11,6 +11,63 @@
 
     <style>
 
+        body[data-bs-theme="dark"] {
+            background-color: #111 !important;
+        }
+
+        body[data-bs-theme="light"] {
+            background-color: #f1f1f1 !important;
+        }
+
+        .card {
+            animation: fadeIn 0.45s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        
+
+
+        /* Suavizar fundo do login */
+        body[data-bs-theme="dark"] {
+            background-color: #111 !important;
+        }
+
+        body[data-bs-theme="light"] {
+            background-color: #f2f2f2 !important;
+        }
+
+        /* Card de login animado */
+        .card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Razor precisa usar @@keyframes */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+
         .sidebar a {
             text-decoration: none;
             font-size: 18px;
@@ -91,6 +148,11 @@
             <a class="d-block text-white mb-3" asp-controller="Evolucoes" asp-action="Index">
                 <i class="bi bi-graph-up-arrow"></i> Evolução Física
             </a>
+
+            <a class="d-block text-white mt-4" asp-controller="Account" asp-action="Logout">
+                <i class="bi bi-box-arrow-right"></i> Sair
+            </a>
+
         </div>
 
         <!-- CONTEÚDO PRINCIPAL -->
