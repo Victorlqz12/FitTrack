@@ -12,8 +12,106 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Bootstrap + JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const html = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+
+
+        const temaSalvo = localStorage.getItem("temaFitTrack");
+
+        if (temaSalvo) {
+            html.setAttribute("data-bs-theme", temaSalvo);
+            btn.textContent = temaSalvo === "dark" ? "☀️" : "🌙";
+        }
+
+        btn.addEventListener("click", () => {
+            const temaAtual = html.getAttribute("data-bs-theme");
+
+            if (temaAtual === "light") {
+                html.setAttribute("data-bs-theme", "dark");
+                btn.textContent = "☀️";
+                localStorage.setItem("temaFitTrack", "dark");
+            } else {
+                html.setAttribute("data-bs-theme", "light");
+                btn.textContent = "🌙";
+                localStorage.setItem("temaFitTrack", "light");
+            }
+        });
+    </script>
+
+
+    @RenderSection("Scripts", required: false)
+
 
     <style>
+
+        /* CARDS DE TREINO */
+        .card-treino {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.25s ease;
+            cursor: pointer;
+            background: var(--bs-body-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+            .card-treino:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 6px 22px rgba(0,0,0,0.25);
+            }
+
+        /* CABEÇALHO DO TREINO */
+        .card-treino-header {
+            background: linear-gradient(90deg, #0d6efd, #4e9cff);
+            padding: 18px;
+            color: white;
+        }
+
+        /* BADGES DE EXERCÍCIOS */
+        .badge-exercicio {
+            background: #0d6efd;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* BOTÃO FLUTUANTE */
+        .btn-add-exercicio {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-add-exercicio:hover {
+                background: #0a58ca;
+            }
+
+        /* LISTA DE EXERCICIOS */
+        .item-exercicio {
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            background: var(--bs-body-bg);
+            transition: 0.15s ease;
+        }
+
+            .item-exercicio:hover {
+                background: rgba(13,110,253,0.05);
+            }
+
 
         .alert {
             border-radius: 8px;
@@ -309,37 +407,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap + JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        const html = document.documentElement;
-        const btn = document.getElementById('themeToggle');
-
-        
-        const temaSalvo = localStorage.getItem("temaFitTrack");
-
-        if (temaSalvo) {
-            html.setAttribute("data-bs-theme", temaSalvo);
-            btn.textContent = temaSalvo === "dark" ? "☀️" : "🌙";
-        }
-
-        btn.addEventListener("click", () => {
-            const temaAtual = html.getAttribute("data-bs-theme");
-
-            if (temaAtual === "light") {
-                html.setAttribute("data-bs-theme", "dark");
-                btn.textContent = "☀️";
-                localStorage.setItem("temaFitTrack", "dark");
-            } else {
-                html.setAttribute("data-bs-theme", "light");
-                btn.textContent = "🌙";
-                localStorage.setItem("temaFitTrack", "light");
-            }
-        });
-    </script>
-
-
-    @RenderSection("Scripts", required: false)
+    
 </body>
 </html>

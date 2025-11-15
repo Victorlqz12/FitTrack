@@ -1,151 +1,142 @@
 ﻿using FitTrack.Data;
 using FitTrack.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 
-namespace FitTrack.Controllers
+[Authorize]
+public class TreinosController : Controller
 {
-    [Authorize]
-    public class TreinosController : Controller
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public TreinosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        _context = context;
+        _userManager = userManager;
+    }
 
-        public TreinosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    // LISTAR APENAS TREINOS DO USUÁRIO
+    public async Task<IActionResult> Index()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        var treinos = await _context.Treinos
+            .Include(t => t.Exercicios)
+            .Where(t => t.UserId == user.Id)
+            .OrderByDescending(t => t.Data)
+            .ToListAsync();
+
+        return View(treinos);
+    }
+
+    // TELA CRIAÇÃO
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    // CRIAR TREINO
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Treino treino)
+    {
+        ModelState.Remove("UserId"); // evitar erro de validação
+
+        var user = await _userManager.GetUserAsync(User);
+        treino.UserId = user.Id;
+
+        if (!ModelState.IsValid)
         {
-            _context = context;
-            _userManager = userManager;
-        }
-
-        // GET: Treinos
-        public async Task<IActionResult> Index()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var userId = user.Id;
-
-            var treinos = await _context.Treinos
-                .Include(t => t.Exercicios)
-                .Where(t => t.UserId == user.Id)
-                .OrderByDescending(t => t.Data)
-                .ToListAsync();
-
-            return View(treinos);
-        }
-
-
-        // GET: Treinos/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Treinos/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Treino treino)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            treino.UserId = user.Id;
-
-            if (ModelState.IsValid)
-            {
-                _context.Add(treino);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
             return View(treino);
         }
 
-        // GET: Treinos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
+        _context.Add(treino);
+        await _context.SaveChangesAsync();
 
-            var user = await _userManager.GetUserAsync(User);
-            var treino = await _context.Treinos.FindAsync(id);
-
-            if (treino == null) return NotFound();
-
-            if (treino.UserId != user.Id)
-                return Unauthorized();
-
-            return View(treino);
-        }
+        return RedirectToAction(nameof(Index));
+    }
 
 
-        // POST: Treinos/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Treino treino)
-        {
-            var user = await _userManager.GetUserAsync(User);
 
-            var treinoDb = await _context.Treinos.FindAsync(id);
+    // EDITAR (GET)
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null) return NotFound();
 
-            if (treinoDb == null) return NotFound();
-            if (treinoDb.UserId != user.Id) return Unauthorized();
+        var treino = await _context.Treinos.FindAsync(id);
+        var user = await _userManager.GetUserAsync(User);
 
-            treinoDb.Data = treino.Data;
-            treinoDb.NomeTreino = treino.NomeTreino;
+        if (treino == null) return NotFound();
+        if (treino.UserId != user.Id) return Unauthorized();
 
-            await _context.SaveChangesAsync();
+        return View(treino);
+    }
 
-            return RedirectToAction(nameof(Index));
-        }
+    // EDITAR (POST)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, Treino treino)
+    {
+        var treinoDb = await _context.Treinos.FindAsync(id);
+        var user = await _userManager.GetUserAsync(User);
 
+        if (treinoDb == null) return NotFound();
+        if (treinoDb.UserId != user.Id) return Unauthorized();
 
-        // GET: Treinos/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
+        treinoDb.NomeTreino = treino.NomeTreino;
+        treinoDb.Data = treino.Data;
 
-            var treino = await _context.Treinos
-                .FirstOrDefaultAsync(t => t.Id == id);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
 
-            if (treino == null) return NotFound();
+    // DETALHES
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null) return NotFound();
 
-            if (treino.UserId != _userManager.GetUserId(User))
-                return Forbid();
+        var user = await _userManager.GetUserAsync(User);
 
-            return View(treino);
-        }
+        var treino = await _context.Treinos
+            .Include(t => t.Exercicios)
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == user.Id);
 
-        // GET: Treinos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
+        if (treino == null) return NotFound();
 
-            var treino = await _context.Treinos
-                .FirstOrDefaultAsync(t => t.Id == id);
+        return View(treino);
+    }
 
-            if (treino == null) return NotFound();
+    // DELETE (GET)
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null) return NotFound();
 
-            if (treino.UserId != _userManager.GetUserId(User))
-                return Forbid();
+        var user = await _userManager.GetUserAsync(User);
 
-            return View(treino);
-        }
+        var treino = await _context.Treinos
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == user.Id);
 
-        // POST: Treinos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var treino = await _context.Treinos.FindAsync(id);
+        if (treino == null) return Unauthorized();
 
-            if (treino != null)
-            {
-                if (treino.UserId != _userManager.GetUserId(User))
-                    return Forbid();
+        return View(treino);
+    }
 
-                _context.Treinos.Remove(treino);
-                await _context.SaveChangesAsync();
-            }
+    // DELETE (POST)
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var treino = await _context.Treinos.FindAsync(id);
+        var user = await _userManager.GetUserAsync(User);
 
-            return RedirectToAction(nameof(Index));
-        }
+        if (treino == null || treino.UserId != user.Id)
+            return Unauthorized();
+
+        _context.Treinos.Remove(treino);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }

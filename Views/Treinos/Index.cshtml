@@ -2,45 +2,32 @@
 
 <h2 class="fw-bold mb-4">Meus Treinos</h2>
 
-<a class="btn btn-primary mb-3" asp-action="Create">
+<a class="btn btn-primary mb-4" asp-action="Create">
     <i class="bi bi-plus-lg"></i> Novo Treino
 </a>
 
 <div class="row">
 
-    @foreach (var t in Model)
+    @foreach (var treino in Model)
     {
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="card-treino"
+                 onclick="location.href='@Url.Action("Details", "Treinos", new { id = treino.Id })'">
 
-                <div class="card-body">
-                    <h4 class="fw-bold mb-1">
-                        <i class="bi bi-bicycle"></i> @t.NomeTreino
+                <div class="card-treino-header">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-bicycle"></i> @treino.NomeTreino
                     </h4>
+                    <small>@treino.Data.ToShortDateString()</small>
+                </div>
 
-                    <p class="text-muted mb-2">@t.Data.ToShortDateString()</p>
-
-                    <p class="mb-1">
-                        <strong>Exercícios:</strong>
-                        @(t.Exercicios?.Count ?? 0)
+                <div class="p-3">
+                    <p class="m-0 text-muted">
+                        <i class="bi bi-list-check"></i>
+                        @((treino.Exercicios?.Count ?? 0)) exercícios
                     </p>
                 </div>
 
-                <div class="card-footer bg-light d-flex justify-content-between">
-
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@t.Id">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@t.Id">
-                        <i class="bi bi-info-circle"></i>
-                    </a>
-
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@t.Id">
-                        <i class="bi bi-trash"></i>
-                    </a>
-
-                </div>
             </div>
         </div>
     }
