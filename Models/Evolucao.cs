@@ -11,10 +11,12 @@ namespace FitTrack.Models
         public DateTime DataRegistro { get; set; }
 
         [Required]
+        public string UserId { get; set; }
+
+
+        [Required]
         public double Peso { get; set; }
 
-        // FK
-        public int UsuarioId { get; set; }
-        public Usuario? Usuario { get; set; }
+       
     }
 }

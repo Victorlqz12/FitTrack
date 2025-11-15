@@ -3,31 +3,37 @@ using FitTrack.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace FitTrack.Controllers
 {
     [Authorize]
     public class TreinosController : Controller
-
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public TreinosController(ApplicationDbContext context)
+        public TreinosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Treinos
         public async Task<IActionResult> Index()
         {
-            var treinos = _context.Treinos.Include(t => t.Usuario);
-            return View(await treinos.ToListAsync());
+            var userId = _userManager.GetUserId(User);
+
+            var treinos = await _context.Treinos
+                                        .Where(t => t.UserId == userId)
+                                        .ToListAsync();
+
+            return View(treinos);
         }
 
         // GET: Treinos/Create
         public IActionResult Create()
         {
-            ViewBag.Usuarios = _context.Usuarios.ToList();
             return View();
         }
 
@@ -38,12 +44,13 @@ namespace FitTrack.Controllers
         {
             if (ModelState.IsValid)
             {
+                treino.UserId = _userManager.GetUserId(User);
+
                 _context.Add(treino);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Usuarios = _context.Usuarios.ToList();
             return View(treino);
         }
 
@@ -55,7 +62,10 @@ namespace FitTrack.Controllers
             var treino = await _context.Treinos.FindAsync(id);
             if (treino == null) return NotFound();
 
-            ViewBag.Usuarios = _context.Usuarios.ToList();
+            // Impede editar treino de outro usuário
+            if (treino.UserId != _userManager.GetUserId(User))
+                return Forbid();
+
             return View(treino);
         }
 
@@ -66,6 +76,10 @@ namespace FitTrack.Controllers
         {
             if (id != treino.Id) return NotFound();
 
+            var userId = _userManager.GetUserId(User);
+
+            if (treino.UserId != userId) return Forbid();
+
             if (ModelState.IsValid)
             {
                 _context.Update(treino);
@@ -73,7 +87,6 @@ namespace FitTrack.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Usuarios = _context.Usuarios.ToList();
             return View(treino);
         }
 
@@ -83,10 +96,12 @@ namespace FitTrack.Controllers
             if (id == null) return NotFound();
 
             var treino = await _context.Treinos
-                                       .Include(t => t.Usuario)
-                                       .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (treino == null) return NotFound();
+
+            if (treino.UserId != _userManager.GetUserId(User))
+                return Forbid();
 
             return View(treino);
         }
@@ -97,10 +112,12 @@ namespace FitTrack.Controllers
             if (id == null) return NotFound();
 
             var treino = await _context.Treinos
-                                       .Include(t => t.Usuario)
-                                       .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (treino == null) return NotFound();
+
+            if (treino.UserId != _userManager.GetUserId(User))
+                return Forbid();
 
             return View(treino);
         }
@@ -114,6 +131,9 @@ namespace FitTrack.Controllers
 
             if (treino != null)
             {
+                if (treino.UserId != _userManager.GetUserId(User))
+                    return Forbid();
+
                 _context.Treinos.Remove(treino);
                 await _context.SaveChangesAsync();
             }

@@ -9,6 +9,9 @@ namespace FitTrack.Models
         [Required]
         public string NomeExercicio { get; set; } = string.Empty;
 
+        [Required]
+        public string UserId { get; set; }
+
         public int Series { get; set; }
         public int Repeticoes { get; set; }
         public double Carga { get; set; }

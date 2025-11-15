@@ -1,31 +1,40 @@
 ﻿using FitTrack.Data;
 using FitTrack.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitTrack.Controllers
 {
+    [Authorize]
     public class EvolucoesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public EvolucoesController(ApplicationDbContext context)
+        public EvolucoesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Evolucoes
+        // GET: Evolucoes - lista apenas do usuário logado
         public async Task<IActionResult> Index()
         {
-            var evolucoes = _context.Evolucoes.Include(e => e.Usuario);
-            return View(await evolucoes.ToListAsync());
+            var userId = _userManager.GetUserId(User);
+
+            var evolucoes = await _context.Evolucoes
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.DataRegistro)
+                .ToListAsync();
+
+            return View(evolucoes);
         }
 
         // GET: Evolucoes/Create
         public IActionResult Create()
         {
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "Id", "Nome");
             return View();
         }
 
@@ -36,12 +45,13 @@ namespace FitTrack.Controllers
         {
             if (ModelState.IsValid)
             {
+                evolucao.UserId = _userManager.GetUserId(User);
+
                 _context.Add(evolucao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "Id", "Nome", evolucao.UsuarioId);
             return View(evolucao);
         }
 
@@ -53,7 +63,9 @@ namespace FitTrack.Controllers
             var evolucao = await _context.Evolucoes.FindAsync(id);
             if (evolucao == null) return NotFound();
 
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "Id", "Nome", evolucao.UsuarioId);
+            if (evolucao.UserId != _userManager.GetUserId(User))
+                return Forbid();
+
             return View(evolucao);
         }
 
@@ -64,6 +76,11 @@ namespace FitTrack.Controllers
         {
             if (id != evolucao.Id) return NotFound();
 
+            var userId = _userManager.GetUserId(User);
+
+            if (evolucao.UserId != userId)
+                return Forbid();
+
             if (ModelState.IsValid)
             {
                 _context.Update(evolucao);
@@ -71,39 +88,42 @@ namespace FitTrack.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "Id", "Nome", evolucao.UsuarioId);
             return View(evolucao);
         }
 
-        // GET: Evolucoes/Details/5
+        // GET: Evolucoes/Details
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
             var evolucao = await _context.Evolucoes
-                                         .Include(e => e.Usuario)
-                                         .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id);
 
             if (evolucao == null) return NotFound();
+
+            if (evolucao.UserId != _userManager.GetUserId(User))
+                return Forbid();
 
             return View(evolucao);
         }
 
-        // GET: Evolucoes/Delete/5
+        // GET: Evolucoes/Delete
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
             var evolucao = await _context.Evolucoes
-                                         .Include(e => e.Usuario)
-                                         .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id);
 
             if (evolucao == null) return NotFound();
+
+            if (evolucao.UserId != _userManager.GetUserId(User))
+                return Forbid();
 
             return View(evolucao);
         }
 
-        // POST: Evolucoes/Delete
+        // POST: Evolucoes/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -112,6 +132,9 @@ namespace FitTrack.Controllers
 
             if (evolucao != null)
             {
+                if (evolucao.UserId != _userManager.GetUserId(User))
+                    return Forbid();
+
                 _context.Evolucoes.Remove(evolucao);
                 await _context.SaveChangesAsync();
             }

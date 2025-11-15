@@ -8,23 +8,19 @@
 
 <form asp-action="Create" method="post">
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label>Data</label>
         <input asp-for="Data" type="date" class="form-control" />
+        <span asp-validation-for="Data" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label>Nome do Treino</label>
         <input asp-for="NomeTreino" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label>Usuário</label>
-        <select asp-for="UsuarioId" class="form-control"
-                asp-items="@(new SelectList(ViewBag.Usuarios, "Id", "Nome"))">
-        </select>
+        <span asp-validation-for="NomeTreino" class="text-danger"></span>
     </div>
 
     <button class="btn btn-success" type="submit">Salvar</button>
     <a class="btn btn-secondary" asp-action="Index">Voltar</a>
+
 </form>
