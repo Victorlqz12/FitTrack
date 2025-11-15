@@ -1,0 +1,37 @@
+﻿@model IEnumerable<FitTrack.Models.Treino>
+
+@{
+    ViewData["Title"] = "Treinos";
+}
+
+<h1>Treinos</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Novo Treino</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Nome do Treino</th>
+            <th>Usuário</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Data.ToShortDateString()</td>
+                <td>@item.NomeTreino</td>
+                <td>@item.Usuario?.Nome</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

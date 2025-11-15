@@ -1,0 +1,30 @@
+﻿@model FitTrack.Models.Treino
+
+@{
+    ViewData["Title"] = "Criar Treino";
+}
+
+<h1>Criar Treino</h1>
+
+<form asp-action="Create" method="post">
+
+    <div class="form-group">
+        <label>Data</label>
+        <input asp-for="Data" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Nome do Treino</label>
+        <input asp-for="NomeTreino" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Usuário</label>
+        <select asp-for="UsuarioId" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Usuarios, "Id", "Nome"))">
+        </select>
+    </div>
+
+    <button class="btn btn-success" type="submit">Salvar</button>
+    <a class="btn btn-secondary" asp-action="Index">Voltar</a>
+</form>
