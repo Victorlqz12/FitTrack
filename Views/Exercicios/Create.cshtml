@@ -1,0 +1,35 @@
+﻿@model FitTrack.Models.Exercicio
+
+<h1>Criar Exercício</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label>Nome do Exercício</label>
+        <input asp-for="NomeExercicio" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Séries</label>
+        <input asp-for="Series" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Repetições</label>
+        <input asp-for="Repeticoes" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Carga (kg)</label>
+        <input asp-for="Carga" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Treino</label>
+        <select asp-for="TreinoId" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Treinos, "Id", "NomeTreino"))">
+        </select>
+    </div>
+
+    <button class="btn btn-success" type="submit">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>

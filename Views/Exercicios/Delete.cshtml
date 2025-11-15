@@ -1,0 +1,13 @@
+﻿@model FitTrack.Models.Exercicio
+
+<h1>Excluir Exercício</h1>
+
+<h3>Tem certeza que deseja excluir este exercício?</h3>
+
+<p><strong>@Model.NomeExercicio</strong></p>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button class="btn btn-danger">Excluir</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>

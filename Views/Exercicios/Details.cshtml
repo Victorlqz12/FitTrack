@@ -1,0 +1,12 @@
+﻿@model FitTrack.Models.Exercicio
+
+<h1>Detalhes do Exercício</h1>
+
+<p><strong>Nome:</strong> @Model.NomeExercicio</p>
+<p><strong>Séries:</strong> @Model.Series</p>
+<p><strong>Repetições:</strong> @Model.Repeticoes</p>
+<p><strong>Carga:</strong> @Model.Carga kg</p>
+<p><strong>Treino:</strong> @Model.Treino?.NomeTreino</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-secondary">Voltar</a>
