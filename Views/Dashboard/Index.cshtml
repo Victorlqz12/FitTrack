@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4 fw-bold">Dashboard</h2>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h5 class="fw-bold">Treinos</h5>
+            <h2 class="text-primary">@ViewBag.TotalTreinos</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h5 class="fw-bold">Exercícios</h5>
+            <h2 class="text-success">@ViewBag.TotalExercicios</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h5 class="fw-bold">Peso Atual</h5>
+            <h2 class="text-warning">@ViewBag.PesoAtual kg</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h5 class="fw-bold">Diferença</h5>
+            <h2 class="@(ViewBag.DiferencaPeso > 0 ? "text-danger" : "text-success")">
+                @ViewBag.DiferencaPeso kg
+            </h2>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+<h4 class="fw-bold mt-4">Evolução do Peso</h4>
+
+<canvas id="graficoPeso" height="100"></canvas>
+
+@section Scripts {
+    <script>
+        const datas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Datas));
+        const pesos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Pesos));
+
+        const ctx = document.getElementById('graficoPeso');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: datas,
+                datasets: [{
+                    label: 'Peso',
+                    data: pesos,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.3)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }]
+            }
+        });
+    </script>
+}
