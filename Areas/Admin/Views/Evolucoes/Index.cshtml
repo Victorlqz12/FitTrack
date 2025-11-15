@@ -1,0 +1,23 @@
+﻿@model IEnumerable<FitTrack.Models.Evolucao>
+
+<h1>Evoluções (Admin)</h1>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Peso</th>
+            <th>UserId</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.DataRegistro.ToShortDateString()</td>
+                <td>@e.Peso</td>
+                <td>@e.UserId</td>
+            </tr>
+        }
+    </tbody>
+</table>

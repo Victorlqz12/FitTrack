@@ -1,8 +1,9 @@
 using FitTrack.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
+using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,4 +62,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+await SeedData.Initialize(roleManager, userManager);
+
 app.Run();
+
