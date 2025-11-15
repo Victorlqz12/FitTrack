@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<FitTrack.Models.Evolucao>
 
 <h1>Evolução Física</h1>
+<canvas id="graficoEvolucao" height="100"></canvas>
+
+<hr />
+
 
 <p>
     <a class="btn btn-primary" asp-action="Create">Registrar Evolução</a>
@@ -30,4 +34,35 @@
             </tr>
         }
     </tbody>
+
 </table>
+
+@section Scripts {
+    <script>
+
+        const datas = @Html.Raw(Json.Serialize(Model.Select(e => e.DataRegistro.ToShortDateString())));
+        const pesos = @Html.Raw(Json.Serialize(Model.Select(e => e.Peso)));
+
+        const ctx = document.getElementById('graficoEvolucao').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: datas,
+                datasets: [{
+                    label: 'Peso (kg)',
+                    data: pesos,
+                    borderWidth: 3,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+    </script>
+}
