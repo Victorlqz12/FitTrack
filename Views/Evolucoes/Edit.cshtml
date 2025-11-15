@@ -1,0 +1,29 @@
+﻿@model FitTrack.Models.Evolucao
+
+<h1>Editar Evolução</h1>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label>Data</label>
+        <input asp-for="DataRegistro" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Peso (kg)</label>
+        <input asp-for="Peso" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Usuário</label>
+        <select asp-for="UsuarioId" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Usuarios, "Id", "Nome"))">
+        </select>
+    </div>
+
+    <button class="btn btn-success">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+
+</form>

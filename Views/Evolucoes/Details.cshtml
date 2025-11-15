@@ -1,0 +1,10 @@
+﻿@model FitTrack.Models.Evolucao
+
+<h1>Detalhes da Evolução</h1>
+
+<p><strong>Data:</strong> @Model.DataRegistro.ToShortDateString()</p>
+<p><strong>Peso:</strong> @Model.Peso kg</p>
+<p><strong>Usuário:</strong> @Model.Usuario?.Nome</p>
+
+<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+<a asp-action="Index" class="btn btn-secondary">Voltar</a>

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<FitTrack.Models.Evolucao>
+
+<h1>Evolução Física</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Registrar Evolução</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Peso (kg)</th>
+            <th>Usuário</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DataRegistro.ToShortDateString()</td>
+                <td>@item.Peso</td>
+                <td>@item.Usuario?.Nome</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
