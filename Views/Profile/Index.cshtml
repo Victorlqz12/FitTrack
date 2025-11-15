@@ -1,0 +1,27 @@
+﻿@model FitTrack.Models.Profile
+
+<h2 class="fw-bold mb-4">Meu Perfil</h2>
+
+<div class="card shadow p-4" style="max-width: 600px;">
+        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center"
+         style="width: 80px; height: 80px; font-size: 32px; font-weight: bold;">
+        @(string.IsNullOrWhiteSpace(Model.Nome) ? "?" : Model.Nome.Substring(0, 1).ToUpper())
+        </div>
+
+        <div class="ms-3">
+            <h3 class="m-0">@Model.Nome</h3>
+            <p class="text-muted m-0">@User.Identity.Name</p>
+        </div>
+    </div>
+
+    <hr />
+
+    <p><strong>Data de Nascimento:</strong> @(Model.DataNascimento?.ToShortDateString() ?? "-")</p>
+    <p><strong>Altura:</strong> @(Model.Altura != null ? Model.Altura + " cm" : "-")</p>
+    <p><strong>Peso Inicial:</strong> @(Model.PesoInicial != null ? Model.PesoInicial + " kg" : "-")</p>
+    <p><strong>Sexo:</strong> @(Model.Sexo ?? "-")</p>
+
+    <div class="mt-4">
+        <a asp-action="Edit" class="btn btn-primary">Editar Perfil</a>
+    </div>
+</div>

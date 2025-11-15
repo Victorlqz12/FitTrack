@@ -15,5 +15,8 @@ namespace FitTrack.Data
         public DbSet<Treino> Treinos => Set<Treino>();
         public DbSet<Exercicio> Exercicios => Set<Exercicio>();
         public DbSet<Evolucao> Evolucoes => Set<Evolucao>();
+        public DbSet<Profile> Profiles { get; set; }
+
+
     }
 }
