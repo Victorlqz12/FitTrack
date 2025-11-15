@@ -12,7 +12,8 @@ namespace FitTrack.Controllers
     public class ExerciciosController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;       
+
 
         public ExerciciosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
@@ -23,15 +24,18 @@ namespace FitTrack.Controllers
         // LISTA APENAS EXERCÍCIOS DO USUÁRIO LOGADO
         public async Task<IActionResult> Index()
         {
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
 
             var exercicios = await _context.Exercicios
                 .Include(e => e.Treino)
                 .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.Id)
                 .ToListAsync();
 
             return View(exercicios);
         }
+
 
         // GET: Exercicios/Create
         public IActionResult Create()
@@ -53,43 +57,42 @@ namespace FitTrack.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Exercicio exercicio)
         {
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            exercicio.UserId = user.Id;
 
             if (ModelState.IsValid)
             {
-                exercicio.UserId = userId;
-
                 _context.Add(exercicio);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
             ViewBag.Treinos = new SelectList(
-                _context.Treinos.Where(t => t.UserId == userId),
+                _context.Treinos.Where(t => t.UserId == user.Id),
                 "Id",
-                "NomeTreino",
-                exercicio.TreinoId
+                "NomeTreino"
             );
 
             return View(exercicio);
         }
+
 
         // GET: Exercicios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var exercicio = await _context.Exercicios.FindAsync(id);
+            var user = await _userManager.GetUserAsync(User);
+            var exercicio = await _context.Exercicios.FirstOrDefaultAsync(e => e.Id == id);
+
             if (exercicio == null) return NotFound();
 
-            // Impede editar exercício de outro usuário
-            if (exercicio.UserId != _userManager.GetUserId(User))
-                return Forbid();
-
-            var userId = _userManager.GetUserId(User);
+            // Não permitir editar exercício de outra pessoa
+            if (exercicio.UserId != user.Id)
+                return Unauthorized();
 
             ViewBag.Treinos = new SelectList(
-                _context.Treinos.Where(t => t.UserId == userId),
+                _context.Treinos.Where(t => t.UserId == user.Id),
                 "Id",
                 "NomeTreino",
                 exercicio.TreinoId
@@ -97,35 +100,38 @@ namespace FitTrack.Controllers
 
             return View(exercicio);
         }
+
 
         // POST: Exercicios/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Exercicio exercicio)
         {
-            if (id != exercicio.Id) return NotFound();
+            var user = await _userManager.GetUserAsync(User);
 
-            var userId = _userManager.GetUserId(User);
+            var exercicioDb = await _context.Exercicios.FirstOrDefaultAsync(e => e.Id == id);
 
-            if (exercicio.UserId != userId)
-                return Forbid();
+            if (exercicioDb == null) return NotFound();
+
+            // Não permitir editar exercício de outra pessoa
+            if (exercicioDb.UserId != user.Id)
+                return Unauthorized();
 
             if (ModelState.IsValid)
             {
-                _context.Update(exercicio);
+                exercicioDb.NomeExercicio = exercicio.NomeExercicio;
+                exercicioDb.Series = exercicio.Series;
+                exercicioDb.Repeticoes = exercicio.Repeticoes;
+                exercicioDb.Carga = exercicio.Carga;
+                exercicioDb.TreinoId = exercicio.TreinoId;
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Treinos = new SelectList(
-                _context.Treinos.Where(t => t.UserId == userId),
-                "Id",
-                "NomeTreino",
-                exercicio.TreinoId
-            );
-
             return View(exercicio);
         }
+
 
         // GET: Exercicios/Details
         public async Task<IActionResult> Details(int? id)
@@ -149,35 +155,40 @@ namespace FitTrack.Controllers
         {
             if (id == null) return NotFound();
 
+            var user = await _userManager.GetUserAsync(User);
+
             var exercicio = await _context.Exercicios
                 .Include(e => e.Treino)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (exercicio == null) return NotFound();
 
-            if (exercicio.UserId != _userManager.GetUserId(User))
-                return Forbid();
+            if (exercicio.UserId != user.Id)
+                return Unauthorized();
 
             return View(exercicio);
         }
+
 
         // POST: Exercicios/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var exercicio = await _context.Exercicios.FindAsync(id);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (exercicio != null)
-            {
-                if (exercicio.UserId != _userManager.GetUserId(User))
-                    return Forbid();
+            var exercicio = await _context.Exercicios.FirstOrDefaultAsync(e => e.Id == id);
 
-                _context.Exercicios.Remove(exercicio);
-                await _context.SaveChangesAsync();
-            }
+            if (exercicio == null) return NotFound();
+
+            if (exercicio.UserId != user.Id)
+                return Unauthorized();
+
+            _context.Exercicios.Remove(exercicio);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

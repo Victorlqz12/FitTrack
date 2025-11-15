@@ -22,14 +22,18 @@ namespace FitTrack.Controllers
         // GET: Treinos
         public async Task<IActionResult> Index()
         {
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
 
             var treinos = await _context.Treinos
-                                        .Where(t => t.UserId == userId)
-                                        .ToListAsync();
+                .Include(t => t.Exercicios)
+                .Where(t => t.UserId == user.Id)
+                .OrderByDescending(t => t.Data)
+                .ToListAsync();
 
             return View(treinos);
         }
+
 
         // GET: Treinos/Create
         public IActionResult Create()
@@ -42,10 +46,11 @@ namespace FitTrack.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Treino treino)
         {
+            var user = await _userManager.GetUserAsync(User);
+            treino.UserId = user.Id;
+
             if (ModelState.IsValid)
             {
-                treino.UserId = _userManager.GetUserId(User);
-
                 _context.Add(treino);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -59,36 +64,38 @@ namespace FitTrack.Controllers
         {
             if (id == null) return NotFound();
 
+            var user = await _userManager.GetUserAsync(User);
             var treino = await _context.Treinos.FindAsync(id);
+
             if (treino == null) return NotFound();
 
-            // Impede editar treino de outro usuário
-            if (treino.UserId != _userManager.GetUserId(User))
-                return Forbid();
+            if (treino.UserId != user.Id)
+                return Unauthorized();
 
             return View(treino);
         }
+
 
         // POST: Treinos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Treino treino)
         {
-            if (id != treino.Id) return NotFound();
+            var user = await _userManager.GetUserAsync(User);
 
-            var userId = _userManager.GetUserId(User);
+            var treinoDb = await _context.Treinos.FindAsync(id);
 
-            if (treino.UserId != userId) return Forbid();
+            if (treinoDb == null) return NotFound();
+            if (treinoDb.UserId != user.Id) return Unauthorized();
 
-            if (ModelState.IsValid)
-            {
-                _context.Update(treino);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            treinoDb.Data = treino.Data;
+            treinoDb.NomeTreino = treino.NomeTreino;
 
-            return View(treino);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Treinos/Details/5
         public async Task<IActionResult> Details(int? id)

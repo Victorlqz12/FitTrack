@@ -1,35 +1,40 @@
 ﻿@model FitTrack.Models.Exercicio
 
-<h1>Criar Exercício</h1>
+<h2 class="fw-bold mb-4">Adicionar Exercício</h2>
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label>Nome do Exercício</label>
-        <input asp-for="NomeExercicio" class="form-control" />
-    </div>
+<div class="card shadow p-4" style="max-width: 600px;">
 
-    <div class="form-group">
-        <label>Séries</label>
-        <input asp-for="Series" class="form-control" />
-    </div>
+    <form asp-action="Create" method="post">
 
-    <div class="form-group">
-        <label>Repetições</label>
-        <input asp-for="Repeticoes" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Nome do Exercício</label>
+            <input asp-for="NomeExercicio" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Carga (kg)</label>
-        <input asp-for="Carga" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label>Séries</label>
+            <input asp-for="Series" type="number" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Treino</label>
-        <select asp-for="TreinoId" class="form-control"
-                asp-items="@(new SelectList(ViewBag.Treinos, "Id", "NomeTreino"))">
-        </select>
-    </div>
+        <div class="mb-3">
+            <label>Repetições</label>
+            <input asp-for="Repeticoes" type="number" class="form-control" />
+        </div>
 
-    <button class="btn btn-success" type="submit">Salvar</button>
-    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-</form>
+        <div class="mb-3">
+            <label>Carga (kg)</label>
+            <input asp-for="Carga" type="number" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Treino</label>
+            <select asp-for="TreinoId" class="form-control"
+                    asp-items="@(new SelectList(ViewBag.Treinos, "Id", "NomeTreino"))">
+            </select>
+        </div>
+
+        <button class="btn btn-success">Salvar</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+
+    </form>
+</div>

@@ -1,37 +1,50 @@
 ﻿@model IEnumerable<FitTrack.Models.Exercicio>
 
-<h1>Exercícios</h1>
+<h2 class="fw-bold mb-4">Meus Exercícios</h2>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Novo Exercício</a>
-</p>
+<a class="btn btn-primary mb-3" asp-action="Create">
+    <i class="bi bi-plus-lg"></i> Novo Exercício
+</a>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Séries</th>
-            <th>Repetições</th>
-            <th>Carga (kg)</th>
-            <th>Treino</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.NomeExercicio</td>
-                <td>@item.Series</td>
-                <td>@item.Repeticoes</td>
-                <td>@item.Carga</td>
-                <td>@item.Treino?.NomeTreino</td>
-                <td>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                    <h5 class="card-title fw-bold">
+                        <i class="bi bi-activity"></i> @item.NomeExercicio
+                    </h5>
+
+                    <p class="mb-1"><strong>Séries:</strong> @item.Series</p>
+                    <p class="mb-1"><strong>Repetições:</strong> @item.Repeticoes</p>
+                    <p class="mb-1"><strong>Carga:</strong> @item.Carga kg</p>
+
+                    <p class="text-muted small mt-2">
+                        <i class="bi bi-bicycle"></i> Treino: @item.Treino?.NomeTreino
+                    </p>
+
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-between">
+
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">
+                        <i class="bi bi-info-circle"></i>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

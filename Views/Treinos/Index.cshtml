@@ -1,36 +1,48 @@
 ﻿@model IEnumerable<FitTrack.Models.Treino>
 
-@{
-    ViewData["Title"] = "Treinos";
-}
+<h2 class="fw-bold mb-4">Meus Treinos</h2>
 
-<h1>Treinos</h1>
+<a class="btn btn-primary mb-3" asp-action="Create">
+    <i class="bi bi-plus-lg"></i> Novo Treino
+</a>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Novo Treino</a>
-</p>
+<div class="row">
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Data</th>
-            <th>Nome do Treino</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Data.ToShortDateString()</td>
-                <td>@item.NomeTreino</td>
+    @foreach (var t in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
 
-                <td>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                <div class="card-body">
+                    <h4 class="fw-bold mb-1">
+                        <i class="bi bi-bicycle"></i> @t.NomeTreino
+                    </h4>
+
+                    <p class="text-muted mb-2">@t.Data.ToShortDateString()</p>
+
+                    <p class="mb-1">
+                        <strong>Exercícios:</strong>
+                        @(t.Exercicios?.Count ?? 0)
+                    </p>
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-between">
+
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@t.Id">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@t.Id">
+                        <i class="bi bi-info-circle"></i>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@t.Id">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
