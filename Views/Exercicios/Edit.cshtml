@@ -1,37 +1,76 @@
 ﻿@model FitTrack.Models.Exercicio
 
-<h1>Editar Exercício</h1>
+@{
+    ViewData["Title"] = "Editar Exercício";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+<div class="row d-flex justify-content-center">
+    <div class="col-md-8 col-lg-6">
 
-    <div class="form-group">
-        <label>Nome</label>
-        <input asp-for="NomeExercicio" class="form-control" />
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewData["Title"]</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="NomeExercicio" class="form-label">Nome</label>
+                        <input asp-for="NomeExercicio" class="form-control" />
+                        <span asp-validation-for="NomeExercicio" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label asp-for="Series" class="form-label"></label>
+                            <input asp-for="Series" class="form-control" />
+                            <span asp-validation-for="Series" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label asp-for="Repeticoes" class="form-label"></label>
+                            <input asp-for="Repeticoes" class="form-control" />
+                            <span asp-validation-for="Repeticoes" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Carga" class="form-label">Carga (kg)</label>
+                        <input asp-for="Carga" class="form-control" />
+                        <span asp-validation-for="Carga" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TreinoId" class="form-label">Treino</label>
+                        <select asp-for="TreinoId" class="form-select" asp-items="ViewBag.Treinos">
+                            <option value="">-- Selecione um Treino --</option>
+                        </select>
+                        <span asp-validation-for="TreinoId" class="text-danger small"></span>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-lg"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <div class="form-group">
-        <label>Séries</label>
-        <input asp-for="Series" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label>Repetições</label>
-        <input asp-for="Repeticoes" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label>Carga (kg)</label>
-        <input asp-for="Carga" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label>Treino</label>
-        <select asp-for="TreinoId" class="form-control"
-                asp-items="@(new SelectList(ViewBag.Treinos, "Id", "NomeTreino"))">
-        </select>
-    </div>
-
-    <button class="btn btn-success">Salvar</button>
-    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-</form>
+@section Scripts {
+    @{
+        // Habilita a validação do lado do cliente (client-side)
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -127,29 +127,71 @@ namespace FitTrack.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
+            // Validação: O ID da rota DEVE ser o mesmo do ID do formulário
+            if (id != exercicio.Id)
+            {
+                return NotFound();
+            }
+
+            // Busca o item original do banco de dados
             var exercicioDb = await _context.Exercicios.FirstOrDefaultAsync(e => e.Id == id);
 
             if (exercicioDb == null) return NotFound();
 
-            // Não permitir editar exercício de outra pessoa
+            // Segurança: Garante que o usuário só edite seus próprios exercícios
             if (exercicioDb.UserId != user.Id)
+            {
                 return Unauthorized();
+            }
+
+            
+            ModelState.Remove("Treino");
+            ModelState.Remove("User"); 
 
             if (ModelState.IsValid)
             {
-                exercicioDb.NomeExercicio = exercicio.NomeExercicio;
-                exercicioDb.Series = exercicio.Series;
-                exercicioDb.Repeticoes = exercicio.Repeticoes;
-                exercicioDb.Carga = exercicio.Carga;
-                exercicioDb.TreinoId = exercicio.TreinoId;
+                try
+                {
+                    // Mapeia os valores do formulário (exercicio) para o
+                    // objeto que veio do banco (exercicioDb)
+                    exercicioDb.NomeExercicio = exercicio.NomeExercicio;
+                    exercicioDb.Series = exercicio.Series;
+                    exercicioDb.Repeticoes = exercicio.Repeticoes;
+                    exercicioDb.Carga = exercicio.Carga;
+                    exercicioDb.TreinoId = exercicio.TreinoId;
 
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    
+                    
+                    await _context.SaveChangesAsync();
+
+                    
+                    return RedirectToAction("Details", "Treinos", new { id = exercicio.TreinoId });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    
+                    if (!_context.Exercicios.Any(e => e.Id == exercicio.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
 
+            
+            ViewBag.Treinos = new SelectList(
+                _context.Treinos.Where(t => t.UserId == user.Id), // A lista de treinos
+                "Id",                                              // Valor
+                "NomeTreino",                                      // Texto
+                exercicio.TreinoId                                 // Item selecionado
+            );
+
+            
             return View(exercicio);
         }
-
 
         // GET: Exercicios/Details
         public async Task<IActionResult> Details(int? id)
