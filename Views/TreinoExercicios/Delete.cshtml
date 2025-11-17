@@ -1,0 +1,32 @@
+﻿@model TreinoExercicio
+
+<h2 class="fw-bold mb-4">Excluir Exercício do Treino</h2>
+
+<div class="card shadow p-4" style="max-width: 600px;">
+
+    <p class="mb-2">
+        <strong>Exercício:</strong> @Model.Exercicio.NomeExercicio
+    </p>
+
+    <p class="mb-2">
+        <strong>Séries:</strong> @Model.Series
+    </p>
+
+    <p class="mb-2">
+        <strong>Repetições:</strong> @Model.Repeticoes
+    </p>
+
+    <p class="mb-2">
+        <strong>Carga:</strong> @Model.Carga kg
+    </p>
+
+    <p class="text-danger mt-3">Tem certeza que deseja remover este exercício do treino?</p>
+
+    <form method="post">
+        <button class="btn btn-danger">Excluir</button>
+        <a asp-controller="Treinos" asp-action="Details" asp-route-id="@Model.TreinoId" class="btn btn-secondary ms-2">
+            Cancelar
+        </a>
+    </form>
+
+</div>

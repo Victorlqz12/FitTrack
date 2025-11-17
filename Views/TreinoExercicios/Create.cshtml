@@ -1,0 +1,40 @@
+﻿@model TreinoExercicio
+
+<h2 class="fw-bold mb-4">Adicionar Exercício ao Treino</h2>
+
+<div class="card shadow p-4" style="max-width: 600px;">
+    <form method="post">
+
+        <input type="hidden" asp-for="TreinoId" />
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Exercício</label>
+            <select asp-for="ExercicioId" class="form-select">
+                @foreach (var ex in ViewBag.Exercicios)
+                {
+                    <option value="@ex.Id">@ex.NomeExercicio</option>
+                }
+            </select>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Séries</label>
+                <input asp-for="Series" class="form-control" />
+            </div>
+
+            <div class="col">
+                <label class="form-label">Repetições</label>
+                <input asp-for="Repeticoes" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Carga (kg)</label>
+            <input asp-for="Carga" class="form-control" />
+        </div>
+
+        <button class="btn btn-primary px-4">Salvar</button>
+        <a asp-action="Details" asp-controller="Treinos" asp-route-id="@Model.TreinoId" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>
