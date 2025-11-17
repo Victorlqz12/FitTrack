@@ -1,11 +1,42 @@
 ﻿@model FitTrack.Models.Evolucao
 
-<h1>Detalhes da Evolução</h1>
+@{
+    ViewData["Title"] = "Detalhes do Registro";
+}
 
-<div class="mt-4">
-    <p><strong>Data:</strong> @Model.DataRegistro.ToShortDateString()</p>
-    <p><strong>Peso:</strong> @Model.Peso kg</p>
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewData["Title"]</h4>
+            </div>
+            <div class="card-body">
+
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        Data do Registro
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Model.DataRegistro.ToShortDateString()
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        Peso
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Model.Peso kg
+                    </dd>
+                </dl>
+
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Voltar para Lista
+                </a>
+                <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">
+                    <i class="bi bi-pencil-fill"></i> Editar
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-
-<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
-<a asp-action="Index" class="btn btn-secondary">Voltar</a>

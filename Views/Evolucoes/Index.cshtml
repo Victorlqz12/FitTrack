@@ -1,66 +1,57 @@
 ﻿@model IEnumerable<FitTrack.Models.Evolucao>
 
-<h1>Evolução Física</h1>
+@{
+    ViewData["Title"] = "Minha Evolução Física";
+}
 
-<canvas id="graficoEvolucao" height="100"></canvas>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">@ViewData["Title"]</h1>
+    <a asp-action="Create" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-lg"></i> Adicionar Novo Registro
+    </a>
+</div>
 
 <hr />
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Registrar Evolução</a>
-</p>
+<h3 class="mb-3">Histórico de Registros</h3>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Data</th>
-            <th>Peso (kg)</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.DataRegistro.ToShortDateString()</td>
-                <td>@item.Peso</td>
-                <td>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@section Scripts {
-    <script>
-
-        const datas = @Html.Raw(Json.Serialize(Model.Select(e => e.DataRegistro.ToShortDateString())));
-        const pesos = @Html.Raw(Json.Serialize(Model.Select(e => e.Peso)));
-
-        const ctx = document.getElementById('graficoEvolucao').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: datas,
-                datasets: [{
-                    label: 'Peso (kg)',
-                    data: pesos,
-                    borderWidth: 3,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: false }
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">Data do Registro</th>
+                    <th scope="col">Peso (kg)</th>
+                    <th scope="col" class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-4">
+                            <h5 class="mb-1">Nenhum registro encontrado.</h5>
+                            <p class="mb-0 text-muted">Comece clicando em "Adicionar Novo Registro".</p>
+                        </td>
+                    </tr>
                 }
-            }
-        });
 
-    </script>
-}
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.DataRegistro.ToShortDateString()</strong></td>
+                        <td>@item.Peso kg</td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil-fill"></i> Editar
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash-fill"></i> Deletar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

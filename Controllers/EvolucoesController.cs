@@ -32,19 +32,34 @@ namespace FitTrack.Controllers
             return View(evolucoes);
         }
 
+     
         // GET: Evolucoes/Create
         public IActionResult Create()
         {
-            return View();
+            // 1. Crie o novo objeto
+            var evolucao = new Evolucao
+            {
+                // 2. Defina o valor padrão AQUI, no Controller
+                DataRegistro = DateTime.Now
+            };
+
+            // 3. Envie o objeto (que não é mais nulo) para a View
+            return View(evolucao);
         }
+
 
         // POST: Evolucoes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Evolucao evolucao)
         {
+            
+            ModelState.Remove("UserId");
+            ModelState.Remove("User"); 
+
             if (ModelState.IsValid)
             {
+                
                 evolucao.UserId = _userManager.GetUserId(User);
 
                 _context.Add(evolucao);
@@ -52,6 +67,7 @@ namespace FitTrack.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            
             return View(evolucao);
         }
 
@@ -74,19 +90,50 @@ namespace FitTrack.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Evolucao evolucao)
         {
-            if (id != evolucao.Id) return NotFound();
+            if (id != evolucao.Id)
+            {
+                return NotFound();
+            }
 
             var userId = _userManager.GetUserId(User);
 
-            if (evolucao.UserId != userId)
+            // 1. Busca o item ORIGINAL do banco
+            var evolucaoDb = await _context.Evolucoes.FirstOrDefaultAsync(e => e.Id == id);
+
+            // 2. VERIFICA O DONO
+            if (evolucaoDb == null || evolucaoDb.UserId != userId)
+            {
                 return Forbid();
+            }
+
+            // Remove validação de propriedades de navegação (se houver)
+            ModelState.Remove("User");
 
             if (ModelState.IsValid)
             {
-                _context.Update(evolucao);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    
+                    evolucaoDb.DataRegistro = evolucao.DataRegistro;
+                    evolucaoDb.Peso = evolucao.Peso;
+
+                    
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Evolucoes.Any(e => e.Id == evolucao.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
+
 
             return View(evolucao);
         }
