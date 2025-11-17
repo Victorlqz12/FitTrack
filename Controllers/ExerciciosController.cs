@@ -38,7 +38,8 @@ namespace FitTrack.Controllers
 
 
         // GET: Exercicios/Create
-        public IActionResult Create()
+
+        public IActionResult Create(int? treinoId)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -46,16 +47,21 @@ namespace FitTrack.Controllers
                 .Where(t => t.UserId == userId)
                 .ToList();
 
+            // SE NÃO TIVER TREINOS, evitar erro
             if (!treinos.Any())
-            {
-                TempData["Erro"] = "Você precisa criar um TREINO antes de cadastrar exercícios.";
-                return RedirectToAction("Index");
-            }
+                treinos.Add(new Treino { Id = 0, NomeTreino = "Nenhum treino disponível" });
 
-            ViewBag.Treinos = new SelectList(treinos, "Id", "NomeTreino");
+            ViewBag.Treinos = treinos;
 
-            return View();
+            var model = new Exercicio();
+
+            if (treinoId.HasValue)
+                model.TreinoId = treinoId.Value;
+
+            return View(model);
         }
+
+
 
 
 
@@ -67,22 +73,25 @@ namespace FitTrack.Controllers
             var user = await _userManager.GetUserAsync(User);
             exercicio.UserId = user.Id;
 
-            if (ModelState.IsValid)
+            // Só por segurança: removemos validação de navegação
+            ModelState.Remove("Treino");
+
+            if (!ModelState.IsValid)
             {
-                _context.Add(exercicio);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewBag.Treinos = new SelectList(
+                    _context.Treinos.Where(t => t.UserId == user.Id).ToList(),
+                    "Id",
+                    "NomeTreino"
+                );
+
+                return View(exercicio);
             }
 
-            ViewBag.Treinos = new SelectList(
-                 _context.Treinos.Where(t => t.UserId == user.Id).ToList(),
-                 "Id",
-                 "NomeTreino",
-                 exercicio.TreinoId
-            );
+            _context.Exercicios.Add(exercicio);
+            await _context.SaveChangesAsync();
 
-
-            return View(exercicio);
+            
+            return RedirectToAction("Details", "Treinos", new { id = exercicio.TreinoId });
         }
 
 

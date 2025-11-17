@@ -5,37 +5,48 @@
 <div class="card shadow p-4" style="max-width: 600px;">
 
     <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="text-danger mb-2"></div>
 
         <div class="mb-3">
             <label class="form-label">Nome do Exercício</label>
             <input asp-for="NomeExercicio" class="form-control" />
+            <span asp-validation-for="NomeExercicio" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label>Séries</label>
             <input asp-for="Series" type="number" class="form-control" />
+            <span asp-validation-for="Series" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label>Repetições</label>
             <input asp-for="Repeticoes" type="number" class="form-control" />
+            <span asp-validation-for="Repeticoes" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label>Carga (kg)</label>
             <input asp-for="Carga" type="number" class="form-control" />
+            <span asp-validation-for="Carga" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label>Treino</label>
-            <select asp-for="TreinoId" class="form-control"
-                    asp-items="@(ViewBag.Treinos ?? new List<SelectListItem>())">
+            <select asp-for="TreinoId" class="form-control">
+                @foreach (var t in ViewBag.Treinos)
+                {
+                    <option value="@t.Id">@t.NomeTreino</option>
+                }
             </select>
 
+
+            <span asp-validation-for="TreinoId" class="text-danger"></span>
         </div>
 
         <button class="btn btn-success">Salvar</button>
         <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
-
     </form>
 </div>

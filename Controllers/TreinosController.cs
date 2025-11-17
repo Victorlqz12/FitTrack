@@ -108,6 +108,7 @@ public class TreinosController : Controller
         return View(treino);
     }
 
+
     // DELETE (GET)
     public async Task<IActionResult> Delete(int? id)
     {

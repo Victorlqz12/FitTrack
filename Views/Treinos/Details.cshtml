@@ -1,36 +1,45 @@
-﻿<h2>@Model.NomeTreino</h2>
+﻿@model FitTrack.Models.Treino
 
-<a class="btn btn-success"
-   asp-controller="TreinoExercicios"
-   asp-action="Create"
-   asp-route-treinoId="@Model.Id">
-    + Adicionar Exercício
-</a>
+<h2 class="fw-bold mb-3">@Model.NomeTreino</h2>
+<p class="text-muted">Data: @Model.Data.ToShortDateString()</p>
 
-<table class="table mt-3">
-    <thead>
-        <tr>
-            <th>Exercício</th>
-            <th>Séries</th>
-            <th>Repetições</th>
-            <th>Peso (kg)</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">Exercícios do treino</h4>
 
-    <tbody>
-        @foreach (var item in Model.Exercicios)
+    <a asp-controller="Exercicios" asp-action="Create"
+       asp-route-treinoId="@Model.Id"
+       class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Adicionar exercício
+    </a>
+</div>
+
+@if (Model.Exercicios == null || !Model.Exercicios.Any())
+{
+    <div class="alert alert-info">
+        Nenhum exercício cadastrado ainda para este treino.
+    </div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var e in Model.Exercicios)
         {
-            <tr>
-                <td>@item.Exercicio.NomeExercicio</td>
-                <td>@item.Series</td>
-                <td>@item.Repeticoes</td>
-                <td>@item.Carga</td>
-                <td>
-                    <a class="btn btn-warning btn-sm" asp-controller="TreinoExercicios" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-danger btn-sm" asp-controller="TreinoExercicios" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
-                </td>
-            </tr>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@e.NomeExercicio</strong><br />
+                    <small>@e.Series x @e.Repeticoes • @e.Carga kg</small>
+                </div>
+                <div>
+                    <a asp-controller="Exercicios" asp-action="Edit" asp-route-id="@e.Id"
+                       class="btn btn-sm btn-outline-warning me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a asp-controller="Exercicios" asp-action="Delete" asp-route-id="@e.Id"
+                       class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </li>
         }
-    </tbody>
-</table>
+    </ul>
+}

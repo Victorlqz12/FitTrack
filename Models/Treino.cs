@@ -13,12 +13,10 @@ namespace FitTrack.Models
 
         [Required]
         public string NomeTreino { get; set; } = string.Empty;
-
-       
-
+     
         public string UserId { get; set; }
 
-        // Um treino tem vários exercícios
+        
         public List<Exercicio>? Exercicios { get; set; }
     }
 }
