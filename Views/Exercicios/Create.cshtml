@@ -29,8 +29,9 @@
         <div class="mb-3">
             <label>Treino</label>
             <select asp-for="TreinoId" class="form-control"
-                    asp-items="@(new SelectList(ViewBag.Treinos, "Id", "NomeTreino"))">
+                    asp-items="@(ViewBag.Treinos ?? new List<SelectListItem>())">
             </select>
+
         </div>
 
         <button class="btn btn-success">Salvar</button>

@@ -42,15 +42,22 @@ namespace FitTrack.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            // Listar somente treinos do usuário
-            ViewBag.Treinos = new SelectList(
-                _context.Treinos.Where(t => t.UserId == userId),
-                "Id",
-                "NomeTreino"
-            );
+            var treinos = _context.Treinos
+                .Where(t => t.UserId == userId)
+                .ToList();
+
+            if (!treinos.Any())
+            {
+                TempData["Erro"] = "Você precisa criar um TREINO antes de cadastrar exercícios.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Treinos = new SelectList(treinos, "Id", "NomeTreino");
 
             return View();
         }
+
+
 
         // POST: Exercicios/Create
         [HttpPost]
@@ -68,10 +75,12 @@ namespace FitTrack.Controllers
             }
 
             ViewBag.Treinos = new SelectList(
-                _context.Treinos.Where(t => t.UserId == user.Id),
-                "Id",
-                "NomeTreino"
+                 _context.Treinos.Where(t => t.UserId == user.Id).ToList(),
+                 "Id",
+                 "NomeTreino",
+                 exercicio.TreinoId
             );
+
 
             return View(exercicio);
         }
