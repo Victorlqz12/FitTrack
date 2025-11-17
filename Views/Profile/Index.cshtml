@@ -1,27 +1,74 @@
 ﻿@model FitTrack.Models.Profile
 
-<h2 class="fw-bold mb-4">Meu Perfil</h2>
+@{
+    ViewData["Title"] = "Meu Perfil";
+}
 
-<div class="card shadow p-4" style="max-width: 600px;">
-        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center"
-         style="width: 80px; height: 80px; font-size: 32px; font-weight: bold;">
-        @(string.IsNullOrWhiteSpace(Model.Nome) ? "?" : Model.Nome.Substring(0, 1).ToUpper())
+<div classs="row d-flex justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3"
+                         style="width: 80px; height: 80px; font-size: 32px; font-weight: bold;">
+                        @(string.IsNullOrWhiteSpace(Model.Nome) ? "?" : Model.Nome.Substring(0, 1).ToUpper())
+                    </div>
+
+                    <div>
+                        <h3 class="mb-0">@(Model.Nome ?? "Usuário")</h3>
+                        <p class="text-muted m-0">@User.Identity.Name</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-3">Informações Pessoais</h5>
+                <ul class="list-group list-group-flush">
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">
+                            <i class="bi bi-calendar-event me-2"></i> Data de Nascimento
+                        </span>
+                        <strong>@(Model.DataNascimento?.ToShortDateString() ?? "Não informado")</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">
+                            <i class="bi bi-gender-ambiguous me-2"></i> Sexo
+                        </span>
+                        <strong>@(Model.Sexo ?? "Não informado")</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">
+                            <i class="bi bi-rulers me-2"></i> Altura
+                        </span>
+                        <strong>@(Model.Altura != null ? Model.Altura + " cm" : "Não informado")</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">
+                            <i class="bi bi-person-badge me-2"></i> Peso Inicial
+                        </span>
+                        <strong>@(Model.PesoInicial != null ? Model.PesoInicial + " kg" : "Não informado")</strong>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <a asp-action="Edit" class="btn btn-primary">
+                    <i class="bi bi-pencil-fill me-1"></i> Editar Perfil
+                </a>
+            </div>
         </div>
 
-        <div class="ms-3">
-            <h3 class="m-0">@Model.Nome</h3>
-            <p class="text-muted m-0">@User.Identity.Name</p>
-        </div>
-    </div>
-
-    <hr />
-
-    <p><strong>Data de Nascimento:</strong> @(Model.DataNascimento?.ToShortDateString() ?? "-")</p>
-    <p><strong>Altura:</strong> @(Model.Altura != null ? Model.Altura + " cm" : "-")</p>
-    <p><strong>Peso Inicial:</strong> @(Model.PesoInicial != null ? Model.PesoInicial + " kg" : "-")</p>
-    <p><strong>Sexo:</strong> @(Model.Sexo ?? "-")</p>
-
-    <div class="mt-4">
-        <a asp-action="Edit" class="btn btn-primary">Editar Perfil</a>
     </div>
 </div>
